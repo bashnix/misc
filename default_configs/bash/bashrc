@@ -1,0 +1,124 @@
+# ═════════════════════════════════════════════════════════════════════════════
+# ~/.bashrc - defaults for personal profiles
+# ─────────────────────────────────────────────────────────────────────────────
+# This file sets up a comfortable, practical bash environment for professional
+# work in IT. Everything in here is tailored to my own, specific needs.
+# You surely don't need anything in here - but feel free to take this as a
+# starting point or take inspiration for your own .bashrc file.
+
+# If not running interactively, dont do anything.
+[[ $- != *i* ]] && return
+
+# *.rc files in this directory will be sourced at the end of this configuration.
+BASH_CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/bash"
+# File naming policy explained:
+#   *.rc    → config files (this is not a script, just sane defaults)
+#   *.bash  → actual Bash scripts (use all the fancy features)
+#   *.sh    → legacy nonsense from people who thought sh = universal
+# If you touch *.sh, be prepared for disappointment.
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Color definitions
+#
+# These are for generating colored output the easy, readable way.
+# ─────────────────────────────────────────────────────────────────────────────
+ESC=$'\033'
+BLK="${ESC}[30m"; BLK_BOLD="${ESC}[30;1m"
+RED="${ESC}[31m"; RED_BOLD="${ESC}[31;1m"
+GRN="${ESC}[32m"; GRN_BOLD="${ESC}[32;1m"
+YLW="${ESC}[33m"; YLW_BOLD="${ESC}[33;1m"
+BLU="${ESC}[34m"; BLU_BOLD="${ESC}[34;1m"
+PRP="${ESC}[35m"; PRP_BOLD="${ESC}[35;1m"
+CYN="${ESC}[36m"; CYN_BOLD="${ESC}[36;1m"
+WHT="${ESC}[37m"; WHT_BOLD="${ESC}[37;1m"
+NC="${ESC}[0m"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Environment
+# ─────────────────────────────────────────────────────────────────────────────
+
+# This is needed for gpg-agent to work correctly
+export GPG_TTY="$(tty)"
+
+# I use vim!
+export EDITOR="vim"
+export VISUAL="vim"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Aliases
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Brings color to your everyday life!
+alias ls="ls --color=auto"
+alias grep="grep --color=auto"
+
+# Navigate more quickly
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias .....="cd ../../../.."
+
+# Quickly edit this file
+alias bashrc="$EDITOR $HOME/.bashrc"
+
+# I never use the old vi anyway.
+alias vi="vim"
+
+# TUI git helper
+alias lzg="lazygit"
+
+# TUI todo-list
+alias t="tudu"
+
+# Load Mah Key!
+alias lmk="ssh-add ${HOME}/.ssh/id_ed25519"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Functions
+# ─────────────────────────────────────────────────────────────────────────────
+
+# mnemonic: Purr my shell!
+# Yes, could be an alias, but who doesn't like fancy stuff?!
+purr() {
+    source "$HOME/.bashrc"
+    echo -e "${YLW_BOLD}Purr... shell refreshed!${NC} 🐾"
+} 
+
+
+# Change to a new temporary dir living in /tmp
+cdt() {
+    local tempdir="$(mktemp -d)"
+    cd "$tempdir"
+}
+
+sshbindport() {
+    local remote="$1"
+    local localport="$2"
+    local remoteport="$3"
+    for arg in "$@"; do
+        if [[ "$arg" == "-h" || "$arg" == "--help" ]]; then
+            echo "Usage: sshbindport <user@remote> <localport> <remoteport>"
+            return
+        fi
+    done
+    ssh -L "$localport":localhost:"$remoteport" "$remote"
+}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Prompt
+# ─────────────────────────────────────────────────────────────────────────────
+
+if [[ $EUID -eq 0 ]]; then
+    PS1="\[${YLW_BOLD}\]\u@\h \[${BLU_BOLD}\]\w\[${NC}\] # "
+else
+    PS1="\[${GRN_BOLD}\]\u@\h \[${BLU_BOLD}\]\w\[${NC}\] $ "
+fi
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Include additional configuration
+# ─────────────────────────────────────────────────────────────────────────────
+
+[[ -d "$BASH_CONFIG_DIR" ]]\
+    && for file in "$BASH_CONFIG_DIR"/*.rc; do source "$file"; done
+

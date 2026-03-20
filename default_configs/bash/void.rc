@@ -1,0 +1,15 @@
+# ══════════════════════════════════════════════════════════════════════════════
+# void.rc
+# vim: ts=4 sts=4 sw=4 noet ft=bash
+# ──────────────────────────────────────────────────────────────────────────────
+# Distro-specific bash settings for unprivileged users on void linux
+# This file is meant to be included in a users ~/.bashrc.
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Aliases
+# ──────────────────────────────────────────────────────────────────────────────
+
+alias xq="xbps-query"
+alias xi="xbps-install"
+

@@ -1,0 +1,37 @@
+# ══════════════════════════════════════════════════════════════════════════════
+# rootuser.rc
+# vim: ts=4 sts=4 sw=4 noet ft=bash
+# ──────────────────────────────────────────────────────────────────────────────
+#
+# This file is meant to be included in a users ~/.bashrc.
+# Everything defined here needs root privileges, that's
+# why it's in a seperate file.
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Functions
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+# This takes an image and the block device file of a USB stick
+# and writes the image to it. Very useful for creating bootable
+# usb-sticks! Doesn't work with Microslop Windows iso files,
+# linux isos are usually fine!
+usbdd() {
+    local image="$1"
+    local usbdev="$2"
+    if [[ $# -lt 2 ]]; then
+        echo "Usage: usbdd <imagefile> <device>"
+        echo "device is name of block device in /dev, e.g. 'sdb'"
+        return
+    fi
+    [[ $usbdev == sd[a-z] ]]\
+        || { echo "$usbdev is not a valid device" >&2 ; return; }
+    lsblk | command grep --color=never 'sd'
+    read -p "${RED_BOLD}You chose /dev/$usbdev as a target device. All data \
+        will be lost! Proceed? (YES):${NC} " choice
+    [[ "$choice" == "YES" ]]\
+        && sudo dd if="$image" of="/dev/$usbdev" bs=4M conv=fsync oflag=direct\
+        status=progress
+}
+
