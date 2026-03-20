@@ -119,6 +119,8 @@ fi
 # Include additional configuration
 # ─────────────────────────────────────────────────────────────────────────────
 
+shopt -s nullglob
 [[ -d "$BASH_CONFIG_DIR" ]]\
     && for file in "$BASH_CONFIG_DIR"/*.rc; do source "$file"; done
+shopt -u nullglob
 
